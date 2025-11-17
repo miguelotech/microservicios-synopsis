@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: Oauth-service
+
+server:
+  port: 9050
+
+logging:
+  level:
+    org.springframework.security: ERROR
+
+
+

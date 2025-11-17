@@ -1,0 +1,97 @@
+{
+    "info": {
+        "_postman_id": "2b3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q",
+        "name": "Microservicio Pedidos",
+        "description": "Colección para probar el microservicio de pedidos",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Listar Pedidos",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8082/api/pedidos",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8082",
+                    "path": [
+                        "api",
+                        "pedidos"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Obtener Pedido por ID",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8082/api/pedidos/1",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8082",
+                    "path": [
+                        "api",
+                        "pedidos",
+                        "1"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Crear Pedido",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"clienteId\": 1,\n    \"detalles\": [\n        {\n            \"productoId\": 1,\n            \"cantidad\": 2\n        },\n        {\n            \"productoId\": 2,\n            \"cantidad\": 1\n        }\n    ]\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8082/api/pedidos",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8082",
+                    "path": [
+                        "api",
+                        "pedidos"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Eliminar Pedido",
+            "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8082/api/pedidos/1",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8082",
+                    "path": [
+                        "api",
+                        "pedidos",
+                        "1"
+                    ]
+                }
+            }
+        }
+    ]
+}

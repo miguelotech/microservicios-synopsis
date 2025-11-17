@@ -1,0 +1,124 @@
+services:
+  ms-config-server:
+    image: ms-config-server:1.0
+    ports:
+      - "8888:8888"
+    environment:
+        - GIT_REPOSITORY=https://github.com/miguelotech/config-repo.git
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://root:s3cr3t@localhost:8888/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  registry-service:
+    image: registry-service:1.0
+    ports:
+      - "9000:9000"
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  gateway-service:
+    image: gateway-service:1.0
+    ports:
+      - "8000:8000"
+    depends_on:
+      ms-config-server:
+        condition: service_healthy
+      registry-service:
+        condition: service_healthy
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/actuator/health"]
+      interval: 30s
+      retries: 3
+
+  ms-product:
+    image: ms-product:1.0
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://db-products:5432/products_db
+      - SPRING_R2DBC_USERNAME=postgres
+      - SPRING_R2DBC_PASSWORD=admin
+    depends_on:
+      - db-products
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  db-products:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=products_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - products-data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ms-orders:
+    image: ms-orders:1.0
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://db-orders:5432/orders_db
+      - SPRING_R2DBC_USERNAME=postgres
+      - SPRING_R2DBC_PASSWORD=admin
+      - PRODUCT_SERVICE_URL=http://ms-product:8081
+    depends_on:
+      - db-orders
+      - ms-product
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  
+  db-orders:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=orders_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - orders-data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  products-data:
+  orders-data:
+
+networks:
+  microservices-net:
+    driver: bridge
