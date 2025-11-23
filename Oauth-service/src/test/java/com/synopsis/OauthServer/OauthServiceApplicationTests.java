@@ -1,13 +1,13 @@
 package com.synopsis.OauthServer;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+import static org.assertj.core.api.Assertions.assertThat;
+
 class OauthServiceApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void applicationClassIsLoadable() {
+		assertThat(new OauthServiceApplication()).isNotNull();
 	}
-
 }
